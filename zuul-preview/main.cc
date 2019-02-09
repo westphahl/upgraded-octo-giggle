@@ -23,21 +23,54 @@
 
 using namespace std;
 
+vector<string> split(string in);
+
+vector<string> split(string in)
+{
+  istringstream stream(in);
+  vector<string> parts;
+  string part;
+  while (getline(stream, part, '.')) {
+    parts.push_back(part);
+  }
+  return parts;
+}
+
 int main(int, char**)
 {
   web::http::client::http_client client("https://zuul.opendev.org");
-  auto uri = web::uri_builder("/api/tenant/openstack/build");
-  uri.append_path("75031cad206c4014ad7a3387091d15ab");
-  auto response = client.request(
-    web::http::methods::GET, uri.to_string()).get();
-  // body is a web::json::value
-  auto body = response.extract_json().get();
-  cout << response.status_code() << endl;
-  cout << body.serialize() << endl;
-  // body["log_url"] returns a web::json::value
-  cout << "The log url is " << body["log_url"] << endl;
-  // body["log_url"].as_string() returns a const std::string&
-  cout << "The log url is " << body["log_url"].as_string() << endl;
-  // body.at("log_url").as_string() returns a const std::string&
-  cout << "The log url is " << body.at("log_url").as_string() << endl;
+
+  string hostname;
+  while (getline(cin, hostname)) {
+    // Expected hostname:
+    // site.75031cad206c4014ad7a3387091d15ab.openstack.preview.opendev.org
+    // Apache will drop "preview.opendev.org", so our expected input will be:
+    // site.75031cad206c4014ad7a3387091d15ab.openstack
+
+    auto parts = split(hostname);
+    if (parts.size() < 3) {
+      cout << "not enough args" << endl;
+      continue;
+    }
+    auto artifact = parts[0];
+    auto buildid = parts[1];
+    auto tenant = parts[2];
+    cout << artifact << endl
+         << buildid << endl
+         << tenant << endl;
+
+     // 75031cad206c4014ad7a3387091d15ab
+    auto uri = web::uri_builder("/api/tenant/" + tenant + "/build");
+    uri.append_path(buildid);
+    auto response = client.request(
+        web::http::methods::GET, uri.to_string()).get();
+    // body is a web::json::value
+    auto body = response.extract_json().get();
+    cout << response.status_code() << endl;
+    cout << body.serialize() << endl;
+
+    // TODO: use artifact
+    // body["log_url"].as_string() returns a const std::string&
+    cout << body["log_url"].as_string() << endl;
+  }
 }
