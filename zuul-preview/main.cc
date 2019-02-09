@@ -29,7 +29,7 @@ using namespace std;
 int main(int, char**)
 {
 
-  RestClient::Response r = RestClient::get("http://zuul.opendev.org/api/tenant/openstack/build/75031cad206c4014ad7a3387091d15ab");
+  RestClient::Response r = RestClient::get("https://zuul.opendev.org/api/tenant/openstack/build/75031cad206c4014ad7a3387091d15ab");
 
   json j = json::parse(r.body);
 
