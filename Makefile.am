@@ -56,6 +56,6 @@ maintainer-clean-local:
 
 
 bin_PROGRAMS = zuul-preview/zuul-preview
-zuul_preview_zuul_preview_LDADD = ${LIBCPPREST}
+zuul_preview_zuul_preview_LDADD = ${LTLIBCPPREST}
 zuul_preview_zuul_preview_SOURCES = \
 	zuul-preview/main.cc
