@@ -29,7 +29,14 @@ int main(int, char**)
   auto response = client.request(
     web::http::methods::GET,
      "/api/tenant/openstack/build/75031cad206c4014ad7a3387091d15ab").get();
+  // body is a web::json::value
   auto body = response.extract_json().get();
   cout << response.status_code() << endl;
   cout << body.serialize() << endl;
+  // body["log_url"] returns a web::json::value
+  cout << "The log url is " << body["log_url"] << endl;
+  // body["log_url"].as_string() returns a const std::string&
+  cout << "The log url is " << body["log_url"].as_string() << endl;
+  // body.at("log_url").as_string() returns a const std::string&
+  cout << "The log url is " << body.at("log_url").as_string() << endl;
 }
