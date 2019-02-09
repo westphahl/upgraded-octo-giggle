@@ -21,11 +21,16 @@ AC_DEFUN([_PANDORA_SEARCH_LIBCPPREST],[
 
   AS_IF([test "x$ac_enable_libcpprest" = "xyes"],[
     AC_LANG_PUSH([C++])
+    save_CXXFLAGS="${CXXFLAGS}"
+    CXXFLAGS="${PTHREAD_CFLAGS} ${CXXFLAGS}"
     AC_LIB_HAVE_LINKFLAGS(cpprest,[boost_system ssl crypto],[
 #include <cpprest/http_client.h>
     ],[
 web::http::client::http_client client("http://example.com/");
     ])
+    CXXFLAGS="${save_CXXFLAGS}"
+    LIBCPPREST="${LIBCPPREST} ${PTHREAD_LIBS}"
+    LTLIBCPPREST="${LTLIBCPPREST} ${PTHREAD_LIBS}"
     AC_LANG_POP()
   ],[
     ac_cv_libcpprest="no"
