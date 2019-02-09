@@ -49,7 +49,6 @@ LT_LANG([C++])
 
 gl_VISIBILITY
 AX_ASSERT
-PANDORA_REQUIRE_LIBCPPREST
 
 
 AS_IF([test "x${pandora_cv_skip_requires}" != "xno"],[
@@ -73,6 +72,8 @@ AX_PTHREAD([
   AM_LDFLAGS="${PTHREAD_LIBS} ${AM_LDFLAGS}"
   LIBS="${PTHREAD_LIBS} ${LIBS}"
   ], [AC_MSG_ERROR([zuul-preview requires pthreads])])
+
+PANDORA_REQUIRE_LIBCPPREST
 
 #########################################################################
 
