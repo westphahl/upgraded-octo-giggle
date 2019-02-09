@@ -23,7 +23,7 @@
 
 using namespace std;
 
-vector<string> split(string in)
+vector<string> split(const string &in)
 {
   istringstream stream(in);
   vector<string> parts;
