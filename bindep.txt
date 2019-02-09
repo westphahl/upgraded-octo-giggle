@@ -1,0 +1,6 @@
+pkg-config [compile test]
+build-essential [compile test]
+autoconf [compile test]
+automake [compile test]
+libtool [compile test]
+nlohmann-json-dev [compile test]
