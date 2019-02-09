@@ -23,6 +23,7 @@ DIST_SUBDIRS = ${SUBDIRS}
 
 EXTRA_DIST= \
 	    config/pandora_vc_revinfo \
+            config/config.rpath \
 	    ${top_srcdir}/m4/*m4
 
 DISTCLEANFILES=		config/top.h
@@ -55,5 +56,6 @@ maintainer-clean-local:
 
 
 bin_PROGRAMS = zuul-preview/zuul-preview
+zuul_preview_zuul_preview_LDADD = ${LIBCPPREST}
 zuul_preview_zuul_preview_SOURCES = \
 	zuul-preview/main.cc

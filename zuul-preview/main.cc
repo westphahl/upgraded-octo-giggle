@@ -19,19 +19,12 @@
 
 #include <config.h>
 #include <pthread.h>
-#include <json.hpp>
-#include <restclient-cpp/restclient.h>
+#include <cpprest/http_client.h>
 
-// for convenience
-using json = nlohmann::json;
 using namespace std;
 
 int main(int, char**)
 {
 
-  RestClient::Response r = RestClient::get("https://zuul.opendev.org/api/tenant/openstack/build/75031cad206c4014ad7a3387091d15ab");
-
-  json j = json::parse(r.body);
-
-  cout << j.dump(4) << endl; 
+  web::http::client::http_client client("https://zuul.opendev.org");
 }

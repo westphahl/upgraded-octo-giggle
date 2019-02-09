@@ -6,6 +6,14 @@
 # Which version of the canonical setup we're using
 AC_DEFUN([ZUUL_CANONICAL_VERSION],[0.175])
 
+AC_DEFUN([PANDORA_MSG_ERROR],[
+  AS_IF([test "x${pandora_cv_skip_requires}" != "xno"],[
+    AC_MSG_ERROR($1)
+  ],[
+    AC_MSG_WARN($1)
+  ])
+])
+
 AC_DEFUN([ZUUL_CANONICAL_TARGET],[
   ifdef([m4_define],,[define([m4_define],   defn([define]))])
   ifdef([m4_undefine],,[define([m4_undefine],   defn([undefine]))])

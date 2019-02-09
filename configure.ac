@@ -49,6 +49,7 @@ LT_LANG([C++])
 
 gl_VISIBILITY
 AX_ASSERT
+PANDORA_REQUIRE_LIBCPPREST
 
 
 AS_IF([test "x${pandora_cv_skip_requires}" != "xno"],[
