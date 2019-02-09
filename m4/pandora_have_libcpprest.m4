@@ -29,8 +29,6 @@ AC_DEFUN([_PANDORA_SEARCH_LIBCPPREST],[
 web::http::client::http_client client("http://example.com/");
     ])
     CXXFLAGS="${save_CXXFLAGS}"
-    LIBCPPREST="${LIBCPPREST} ${PTHREAD_LIBS}"
-    LTLIBCPPREST="${LTLIBCPPREST} ${PTHREAD_LIBS}"
     AC_LANG_POP()
   ],[
     ac_cv_libcpprest="no"

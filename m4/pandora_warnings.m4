@@ -185,8 +185,8 @@ foo();
            [ac_cv_safe_to_use_wformat_=no])
          CFLAGS="$save_CFLAGS"])
       AS_IF([test "$ac_cv_safe_to_use_wformat_" = "yes"],[
-        BASE_WARNINGS="${BASE_WARNINGS} -Wformat -Wno-format-nonliteral -Wno-format-security"
-        BASE_WARNINGS_FULL="${BASE_WARNINGS_FULL} -Wformat=2 -Wno-format-nonliteral -Wno-format-security"
+        BASE_WARNINGS="${BASE_WARNINGS} -Wformat=2"
+        BASE_WARNINGS_FULL="${BASE_WARNINGS_FULL} -Wformat=2"
         ],[
         BASE_WARNINGS="${BASE_WARNINGS} -Wno-format"
         BASE_WARNINGS_FULL="${BASE_WARNINGS_FULL} -Wno-format"
@@ -238,7 +238,7 @@ uint16_t x= htons(80);
       ])
 
       CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL}"
-      CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy -Wno-long-long ${CXX_WARNINGS_FULL}"
+      CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy ${CXX_WARNINGS_FULL}"
 
       AC_CACHE_CHECK([whether it is safe to use -Wmissing-declarations from C++],
         [ac_cv_safe_to_use_Wmissing_declarations_],
