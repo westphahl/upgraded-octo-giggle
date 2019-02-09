@@ -18,22 +18,20 @@
  */
 
 #include <config.h>
-
 #include <pthread.h>
-
 #include <json.hpp>
+#include <restclient-cpp/restclient.h>
 
 // for convenience
 using json = nlohmann::json;
-
 using namespace std;
-
 
 int main(int, char**)
 {
-  json j;
-  j["pi"] = 3.14;
-  j["happy"] = true;
+
+  RestClient::Response r = RestClient::get("http://zuul.opendev.org/api/tenant/openstack/build/75031cad206c4014ad7a3387091d15ab");
+
+  json j = json::parse(r.body);
 
   cout << j.dump(4) << endl; 
 }
