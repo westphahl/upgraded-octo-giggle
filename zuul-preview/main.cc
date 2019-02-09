@@ -26,9 +26,10 @@ using namespace std;
 int main(int, char**)
 {
   web::http::client::http_client client("https://zuul.opendev.org");
+  auto uri = web::uri_builder("/api/tenant/openstack/build");
+  uri.append_path("75031cad206c4014ad7a3387091d15ab");
   auto response = client.request(
-    web::http::methods::GET,
-     "/api/tenant/openstack/build/75031cad206c4014ad7a3387091d15ab").get();
+    web::http::methods::GET, uri.to_string()).get();
   // body is a web::json::value
   auto body = response.extract_json().get();
   cout << response.status_code() << endl;
