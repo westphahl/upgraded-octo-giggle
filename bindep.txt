@@ -3,5 +3,6 @@ build-essential [compile test]
 autoconf [compile test]
 automake [compile test]
 libtool [compile test]
+gettext [compile test]
 libcpprest-dev [compile test]
 libcpprest
