@@ -240,25 +240,6 @@ uint16_t x= htons(80);
       CC_WARNINGS="${BASE_WARNINGS} -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL}"
       CXX_WARNINGS="${BASE_WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy ${CXX_WARNINGS_FULL}"
 
-      AC_CACHE_CHECK([whether it is safe to use -Wmissing-declarations from C++],
-        [ac_cv_safe_to_use_Wmissing_declarations_],
-        [AC_LANG_PUSH(C++)
-         save_CXXFLAGS="$CXXFLAGS"
-         CXXFLAGS="-Werror -pedantic -Wmissing-declarations ${AM_CXXFLAGS}"
-         AC_COMPILE_IFELSE([
-           AC_LANG_PROGRAM(
-           [[
-#include <stdio.h>
-           ]], [[]])
-        ],
-        [ac_cv_safe_to_use_Wmissing_declarations_=yes],
-        [ac_cv_safe_to_use_Wmissing_declarations_=no])
-        CXXFLAGS="$save_CXXFLAGS"
-        AC_LANG_POP()
-      ])
-      AS_IF([test "$ac_cv_safe_to_use_Wmissing_declarations_" = "yes"],
-            [CXX_WARNINGS="${CXX_WARNINGS} -Wmissing-declarations"])
-  
       AC_CACHE_CHECK([whether it is safe to use -Wframe-larger-than],
         [ac_cv_safe_to_use_Wframe_larger_than_],
         [AC_LANG_PUSH(C++)
