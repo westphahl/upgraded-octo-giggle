@@ -29,7 +29,7 @@ using json = nlohmann::json;
 using namespace std;
 
 
-int main(int argc, char **argv)
+int main(int, char**)
 {
   json j;
   j["pi"] = 3.14;

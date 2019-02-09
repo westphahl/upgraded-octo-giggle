@@ -74,9 +74,7 @@ AC_DEFUN([ZUUL_CANONICAL_TARGET],[
 
   PANDORA_HEADER_ASSERT
 
-  # Enable PANDORA_WARNINGS once there is C++ code that's not generated, if
-  # that's ever a time
-  dnl PANDORA_WARNINGS(PCT_ALL_ARGS)
+  PANDORA_WARNINGS(PCT_ALL_ARGS)
 
   PANDORA_ENABLE_DTRACE
 
