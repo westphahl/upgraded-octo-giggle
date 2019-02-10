@@ -36,11 +36,19 @@ vector<string> split(const string &in)
 }
 
 class Cache {
+  // A queue of hostname, URL pairs.  The head of the queue is always
+  // the most recently accessed entry, the tail is the least.
   list<pair<string, string>> queue;
+
+  // A map of hostname -> iterator that points into the queue, for
+  // quick lookup.
   unordered_map<string, list<pair<string, string>>::iterator> map;
+
+  // The maximum size of the cache.
   uint size;
 
 public:
+  // A constant returned by get if the entry is not found.
   string notfound = "";
 
   Cache(uint s)
@@ -49,6 +57,9 @@ public:
     size = s;
   }
 
+  // Lookup the hostname in the cache and return the URL if present,
+  // notfound otherwise.  If the entry is present, it is moved to the
+  // head of the queue.
   string get(string key)
   {
     auto location = map.find(key);
@@ -62,6 +73,8 @@ public:
     return val.second;
   }
 
+  // Add an entry to the cache.  If the cache is full, drop the least
+  // recently used entry.
   void put(string key, string value)
   {
     auto location = map.find(key);
