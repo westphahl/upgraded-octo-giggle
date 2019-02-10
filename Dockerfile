@@ -16,14 +16,14 @@
 FROM debian:testing as builder
 
 RUN mkdir -p /output/bindep
-RUN apt-get update && apt-get install -y python3-pip && pip3 install bindep
+RUN apt-get update && apt-get install -y python3-pip git && pip3 install bindep
 COPY bindep.txt /bindep.txt
 RUN cd / && bindep -l newline > /output/bindep/run.txt
 RUN apt-get install -y $(bindep -b compile)
 COPY . /src
 RUN cd /src \
   && autoreconf -fi \
-  && ./configure \
+  && ./configure --with-comment=$(git describe --always) \
   && make \
   && make install
 

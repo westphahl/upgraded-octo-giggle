@@ -1,7 +1,8 @@
 dnl -*- bash -*-
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009 Sun Microsystems, Inc.
+dnl Copyright 2009 Sun Microsystems, Inc.
+dnl Copyright 2019 Red Hat, Inc.
 dnl
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -41,43 +42,19 @@ AC_CONFIG_HEADERS([config.h])
 
 AC_CONFIG_SRCDIR([zuul-preview/main.cc])
 
-ZUUL_CANONICAL_TARGET([require-cxx, version-from-vc]) 
+OPENDEV_CANONICAL_TARGET
 
 LT_PREREQ([2.4])
 LT_INIT
 LT_LANG([C++])
 
-AS_IF([test "x${pandora_cv_skip_requires}" != "xno"],[
-
-  AC_ARG_WITH([comment],
-    [AS_HELP_STRING([--with-comment],
-      [Comment about compilation environment. @<:@default=off@:>@])],
-    [with_comment=$withval],
-    [with_comment=no])
-  AS_IF([test "$with_comment" != "no"],[
-    COMPILATION_COMMENT=$with_comment
-    ],[
-    COMPILATION_COMMENT="Source distribution (${PANDORA_RELEASE_COMMENT})"
-    ])
-  AC_DEFINE_UNQUOTED([COMPILATION_COMMENT],["$COMPILATION_COMMENT"],
-    [Comment about compilation environment])
-])
-
-AX_PTHREAD([
-  AM_CXXFLAGS="${PTHREAD_CFLAGS} ${AM_CXXFLAGS}"
-  AM_LDFLAGS="${PTHREAD_LIBS} ${AM_LDFLAGS}"
-  LIBS="${PTHREAD_LIBS} ${LIBS}"
-  ], [AC_MSG_ERROR([zuul-preview requires pthreads])])
-
-PANDORA_REQUIRE_LIBCPPREST
+REQUIRE_LIBCPPREST
 
 #########################################################################
 
 AS_IF([test "$lt_cv_prog_gnu_ld" = "yes"],[
   LDFLAGS="${LDFLAGS} ${LD_VERSION_SCRIPT}"
   ])
-
-AM_CXXFLAGS="-std=c++14 $AM_CXXFLAGS"
 
 AC_CONFIG_FILES([Makefile])
 
@@ -86,19 +63,13 @@ AC_OUTPUT
 echo "---"
 echo "Configuration summary for $PACKAGE_NAME version $VERSION"
 echo ""
-echo "   * Installation prefix:       $prefix"
-echo "   * System type:               $host_vendor-$host_os"
-echo "   * Host CPU:                  $host_cpu"
-echo "   * C++ Compiler:              $CXX_VERSION"
-echo "   * C++ Flags:                 $CXXFLAGS"
-echo "   * C++ AM Flags:              $AM_CXXFLAGS"
-echo "   * CPP Flags:                 $CPPFLAGS"
-echo "   * CPP AM Flags:              $AM_CPPFLAGS"
-echo "   * Assertions enabled:        $ac_cv_assert"
-echo "   * Debug enabled:             $with_debug"
-echo "   * Profiling enabled:         $ac_profiling"
-echo "   * Coverage enabled:          $ac_coverage"
-echo "   * Warnings as failure:       $ac_cv_warnings_as_errors"
+echo "   * Installation prefix: $prefix"
+echo "   * System type:         $host_vendor-$host_os"
+echo "   * Host CPU:            $host_cpu"
+echo "   * C++ Flags:           $AM_CXXFLAGS"
+echo "   * CPP Flags:           $AM_CPPFLAGS"
+echo "   * Debug enabled:       $enable_debug"
+echo "   * Coverage enabled:    $enable_code_coverage"
 echo ""
 echo "---"
 
