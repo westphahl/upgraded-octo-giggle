@@ -107,8 +107,8 @@ foo(0);
       AS_IF([test "$ac_cv_safe_to_use_wconversion_" = "yes"],
             [W_CONVERSION="-Wconversion"])
 
-      CC_WARNINGS="${BASE_WARNINGS} -Wattributes -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL} ${W_CONVERSION}"
-      CXX_WARNINGS="${BASE_WARNINGS} -Wattributes -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy ${CXX_WARNINGS_FULL} ${W_CONVERSION}"
+      CC_WARNINGS="${BASE_WARNINGS} -Werror -Wattributes -Wstrict-prototypes -Wmissing-prototypes -Wredundant-decls -Wmissing-declarations -Wcast-align ${CC_WARNINGS_FULL} ${W_CONVERSION}"
+      CXX_WARNINGS="${BASE_WARNINGS} -Werror -Wattributes -Woverloaded-virtual -Wnon-virtual-dtor -Wctor-dtor-privacy ${CXX_WARNINGS_FULL} ${W_CONVERSION}"
 
       AC_CACHE_CHECK([whether it is safe to use -Wframe-larger-than],[ac_cv_safe_to_use_Wframe_larger_than_],[
         AC_LANG_PUSH(C++)
