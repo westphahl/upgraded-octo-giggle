@@ -1,8 +1,10 @@
-pkg-config [compile test]
-build-essential [compile test]
+make [compile test]
+g++ [compile test]
 autoconf [compile test]
 automake [compile test]
 libtool [compile test]
+autoconf-archive [compile test]
+gnulib [compile test]
 gettext [compile test]
 libcpprest-dev [compile test]
 libcpprest

@@ -29,6 +29,7 @@ AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects foreign tar-ustar])
 AC_PREREQ(2.59)dnl		Minimum Autoconf version required.
 
+AX_CHECK_ENABLE_DEBUG
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
 AC_ARG_PROGRAM
@@ -45,11 +46,6 @@ ZUUL_CANONICAL_TARGET([require-cxx, version-from-vc])
 LT_PREREQ([2.4])
 LT_INIT
 LT_LANG([C++])
-
-
-gl_VISIBILITY
-AX_ASSERT
-
 
 AS_IF([test "x${pandora_cv_skip_requires}" != "xno"],[
 

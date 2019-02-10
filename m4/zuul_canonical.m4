@@ -47,6 +47,9 @@ AC_DEFUN([ZUUL_CANONICAL_TARGET],[
     ])
   ])
 
+  AC_REQUIRE([AC_PROG_CC])
+  AC_REQUIRE([AC_PROG_CXX])
+
   # We need to prevent canonical target
   # from injecting -O2 into CFLAGS - but we won't modify anything if we have
   # set CFLAGS on the command line, since that should take ultimate precedence
@@ -57,7 +60,6 @@ AC_DEFUN([ZUUL_CANONICAL_TARGET],[
 
   m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
-  AC_REQUIRE([AC_PROG_CC])
 
   m4_if(PCT_NO_VC_CHANGELOG,yes,[
     vc_changelog=no
@@ -75,13 +77,11 @@ AC_DEFUN([ZUUL_CANONICAL_TARGET],[
     AC_SUBST(PANDORA_RELEASE_VERSION)
   ])
 
-  AC_REQUIRE([AC_PROG_CXX])
   AM_PROG_CC_C_O
   AC_PROG_CC_STDC
+  gl_VISIBILITY
 
   PANDORA_OPTIMIZE
-
-  PANDORA_HEADER_ASSERT
 
   PANDORA_WARNINGS(PCT_ALL_ARGS)
 
