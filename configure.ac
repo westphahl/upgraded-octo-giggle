@@ -42,19 +42,14 @@ AC_CONFIG_HEADERS([config.h])
 
 AC_CONFIG_SRCDIR([zuul-preview/main.cc])
 
-OPENDEV_CANONICAL_TARGET
-
 LT_PREREQ([2.4])
 LT_INIT
 LT_LANG([C++])
 
+OPENDEV_CANONICAL_TARGET
 REQUIRE_LIBCPPREST
 
 #########################################################################
-
-AS_IF([test "$lt_cv_prog_gnu_ld" = "yes"],[
-  LDFLAGS="${LDFLAGS} ${LD_VERSION_SCRIPT}"
-  ])
 
 AC_CONFIG_FILES([Makefile])
 
@@ -72,10 +67,3 @@ echo "   * Debug enabled:       $enable_debug"
 echo "   * Coverage enabled:    $enable_code_coverage"
 echo ""
 echo "---"
-
-dnl libtoolize scans configure.ac  and needs to see some text
-m4_define([LIBTOOLIZE_AC_INIT], [])
-m4_define([UNUSED_MACRO], [
-  LT_INIT
-  AC_CONFIG_MACRO_DIR([m4])
-])
