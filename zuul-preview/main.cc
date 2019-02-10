@@ -38,35 +38,29 @@ vector<string> split(const string &in)
 class Cache {
   // A queue of hostname, URL pairs.  The head of the queue is always
   // the most recently accessed entry, the tail is the least.
-  list<pair<string, string>> queue;
+  list<pair<const string, const string>> queue;
 
   // A map of hostname -> iterator that points into the queue, for
   // quick lookup.
-  unordered_map<string, list<pair<string, string>>::iterator> map;
+  unordered_map<string, list<pair<const string, const string>>::iterator> map;
 
   // The maximum size of the cache.
-  uint size;
+  const uint32_t size;
 
 public:
-  // A constant returned by get if the entry is not found.
-  string notfound = "";
-
   Cache(uint s)
-    : queue {}, map {}, size(0)
-  {
-    size = s;
-  }
+    : queue {}, map {}, size{s}
+  { }
 
-  // Lookup the hostname in the cache and return the URL if present,
-  // notfound otherwise.  If the entry is present, it is moved to the
-  // head of the queue.
-  string get(string key)
+  // Lookup the hostname in the cache and return the URL if present.
+  // If the entry is present, it is moved to the head of the queue.
+  optional<const string> get(const string &key)
   {
     auto location = map.find(key);
     if (location == map.end())
-      return notfound;
+      return {};
 
-    pair<string, string> val = *(location->second);
+    auto val = *(location->second);
     queue.erase(location->second);
     queue.push_front(val);
     cout << "get push " << val.second << endl;
@@ -75,14 +69,14 @@ public:
 
   // Add an entry to the cache.  If the cache is full, drop the least
   // recently used entry.
-  void put(string key, string value)
+  void put(const string &key, const string &value)
   {
     auto location = map.find(key);
     if (location != map.end())
       return;
 
     if (queue.size() == size) {
-      pair<string, string> last = queue.back();
+      auto last = queue.back();
       cout << "put pop " << last.second << endl;
       queue.pop_back();
       map.erase(last.first);
@@ -100,7 +94,7 @@ int main(int, char**)
   web::http::client::http_client client("https://zuul.opendev.org");
 
   string hostname;
-  Cache cache = Cache(2);
+  Cache cache{2};
   while (getline(cin, hostname)) {
     // Expected hostname:
     // site.75031cad206c4014ad7a3387091d15ab.openstack.preview.opendev.org
@@ -110,9 +104,9 @@ int main(int, char**)
     // site.688b70499b9a41a08f498ed6e932960c.openstack
     // site.dbefc23dcc594577a8bfa4db4f9b0a8f.openstack
 
-    string val = cache.get(hostname);
-    if (val != cache.notfound) {
-      cout << val << endl;
+    auto val = cache.get(hostname);
+    if (val.has_value()) {
+      cout << val.value() << endl;
       continue;
     }
 
