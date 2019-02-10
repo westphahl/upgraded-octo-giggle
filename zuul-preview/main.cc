@@ -47,15 +47,19 @@ class Cache {
   // The maximum size of the cache.
   const uint32_t size;
 
+  // Mutex protecting the map and list.
+  mutex cache_mutex;
+
 public:
   Cache(uint s)
-    : queue {}, map {}, size{s}
+    : queue {}, map {}, size{s}, cache_mutex{}
   { }
 
   // Lookup the hostname in the cache and return the URL if present.
   // If the entry is present, it is moved to the head of the queue.
   optional<const string> get(const string &key)
   {
+    lock_guard<mutex> guard{cache_mutex};
     auto location = map.find(key);
     if (location == map.end())
       return {};
@@ -71,6 +75,7 @@ public:
   // recently used entry.
   void put(const string &key, const string &value)
   {
+    lock_guard<mutex> guard{cache_mutex};
     auto location = map.find(key);
     if (location != map.end())
       return;
