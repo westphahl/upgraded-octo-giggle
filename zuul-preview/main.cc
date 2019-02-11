@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <pthread.h>
+#include <boost/optional.hpp>
 #include <cpprest/http_client.h>
 #include <bits/stdc++.h>
 
@@ -54,7 +55,7 @@ public:
 
   // Lookup the hostname in the cache and return the URL if present.
   // If the entry is present, it is moved to the head of the queue.
-  optional<const string> get(const string &key)
+  boost::optional<const string> get(const string &key)
   {
     auto location = map.find(key);
     if (location == map.end())
