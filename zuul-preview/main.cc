@@ -104,8 +104,7 @@ int main(int, char**)
     // site.688b70499b9a41a08f498ed6e932960c.openstack
     // site.dbefc23dcc594577a8bfa4db4f9b0a8f.openstack
 
-    auto val = cache.get(hostname);
-    if (val.has_value()) {
+    if (auto val = cache.get(hostname)) {
       cout << val.value() << endl;
       continue;
     }
