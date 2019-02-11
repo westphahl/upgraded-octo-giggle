@@ -94,7 +94,7 @@ int main(int, char**)
   web::http::client::http_client client("https://zuul.opendev.org");
 
   string hostname;
-  Cache cache{2};
+  Cache cache{1024};
   while (getline(cin, hostname)) {
     // Expected hostname:
     // site.75031cad206c4014ad7a3387091d15ab.openstack.preview.opendev.org
