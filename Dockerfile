@@ -31,9 +31,13 @@ FROM debian:testing
 
 COPY --from=builder /output/bindep/run.txt /run.txt
 RUN apt-get update \
-  && apt-get install -y dumb-init $(cat /run.txt) \
+  && apt-get install -y dumb-init apache2 $(cat /run.txt) \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /run.txt
+  && rm -rf /var/lib/apt/lists/* /run.txt \
+  && a2enmod rewrite proxy proxy_http
+COPY ./vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY --from=builder /usr/local /usr/local
+
+EXPOSE 80
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["/usr/local/bin/zuul-preview"]
+CMD ["/usr/sbin/apachectl", "-DFOREGROUND", "-e", "info"]

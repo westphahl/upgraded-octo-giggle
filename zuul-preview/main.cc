@@ -47,19 +47,15 @@ class Cache {
   // The maximum size of the cache.
   const uint32_t size;
 
-  // Mutex protecting the map and list.
-  mutex cache_mutex;
-
 public:
   Cache(uint s)
-    : queue {}, map {}, size{s}, cache_mutex{}
+    : queue {}, map {}, size{s}
   { }
 
   // Lookup the hostname in the cache and return the URL if present.
   // If the entry is present, it is moved to the head of the queue.
   optional<const string> get(const string &key)
   {
-    lock_guard<mutex> guard{cache_mutex};
     auto location = map.find(key);
     if (location == map.end())
       return {};
@@ -67,7 +63,7 @@ public:
     auto val = *(location->second);
     queue.erase(location->second);
     queue.push_front(val);
-    cout << "get push " << val.second << endl;
+    //cout << "get push " << val.second << endl;
     return val.second;
   }
 
@@ -75,19 +71,18 @@ public:
   // recently used entry.
   void put(const string &key, const string &value)
   {
-    lock_guard<mutex> guard{cache_mutex};
     auto location = map.find(key);
     if (location != map.end())
       return;
 
     if (queue.size() == size) {
       auto last = queue.back();
-      cout << "put pop " << last.second << endl;
+      //cout << "put pop " << last.second << endl;
       queue.pop_back();
       map.erase(last.first);
     }
 
-    cout << "put push " << value << endl;
+    //cout << "put push " << value << endl;
     queue.push_front(make_pair(key, value));
     map[key] = queue.begin();
   }
@@ -130,19 +125,23 @@ int main(int, char**)
     */
 
      // 75031cad206c4014ad7a3387091d15ab
-    auto uri = web::uri_builder("/api/tenant/" + tenant + "/build");
-    uri.append_path(buildid);
-    auto response = client.request(
+    try {
+      auto uri = web::uri_builder("/api/tenant/" + tenant + "/build");
+      uri.append_path(buildid);
+      auto response = client.request(
         web::http::methods::GET, uri.to_string()).get();
-    // body is a web::json::value
-    auto body = response.extract_json().get();
-    //cout << response.status_code() << endl;
-    //cout << body.serialize() << endl;
+      // body is a web::json::value
+      // cout << response.status_code() << endl;
+      auto body = response.extract_json().get();
+      //cout << body.serialize() << endl;
 
-    // TODO: use artifact
-    // body["log_url"].as_string() returns a const std::string&
-    cout << body["log_url"].as_string() << endl;
+      // TODO: use artifact
+      // body["log_url"].as_string() returns a const std::string&
+      cout << body["log_url"].as_string() << endl;
 
-    cache.put(hostname, body["log_url"].as_string());
+      cache.put(hostname, body["log_url"].as_string());
+    } catch (...) {
+      cout << "error" << endl;
+    }
   }
 }
