@@ -17,6 +17,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
+ * This program reads one line at a time on standard input, expecting
+ * a specially formatted hostname from Apache's RewriteMap and uses
+ * that to look up a build URL which it emits on standard output.
+ */
+
 #include <config.h>
 #include <pthread.h>
 #include <boost/optional.hpp>
@@ -36,6 +42,7 @@ vector<string> split(const string &in)
   return parts;
 }
 
+// An LRU cache of hostname->URL mappings.
 class Cache {
   // A queue of hostname, URL pairs.  The head of the queue is always
   // the most recently accessed entry, the tail is the least.
@@ -64,7 +71,6 @@ public:
     auto val = *(location->second);
     queue.erase(location->second);
     queue.push_front(val);
-    //cout << "get push " << val.second << endl;
     return val.second;
   }
 
@@ -78,12 +84,10 @@ public:
 
     if (queue.size() == size) {
       auto last = queue.back();
-      //cout << "put pop " << last.second << endl;
       queue.pop_back();
       map.erase(last.first);
     }
 
-    //cout << "put push " << value << endl;
     queue.push_front(make_pair(key, value));
     map[key] = queue.begin();
   }
@@ -96,52 +100,52 @@ int main(int, char**)
 
   string hostname;
   Cache cache{1024};
-  while (getline(cin, hostname)) {
-    // Expected hostname:
-    // site.75031cad206c4014ad7a3387091d15ab.openstack.preview.opendev.org
-    // Apache will drop "preview.opendev.org", so our expected input will be:
-    // site.75031cad206c4014ad7a3387091d15ab.openstack
-    // site.7c16d914db5a4c4b91cd9a31d119dd48.openstack
-    // site.688b70499b9a41a08f498ed6e932960c.openstack
-    // site.dbefc23dcc594577a8bfa4db4f9b0a8f.openstack
 
+  // For each request apache receieves, it sends us the HTTP host name
+  // on standard input.  We use that to look up the build URL and emit
+  // it on standard output.  Apache will send us one request at a time
+  // (protected by an internal mutex) and expect exactly one line of
+  // output for each.
+  // Expected input:
+  // site.926bb0aaddad4bc3853269451e115dcb.openstack.preview.opendev.org
+  while (getline(cin, hostname)) {
+
+    // If we have the value in the cache, return it.
     if (auto val = cache.get(hostname)) {
       cout << val.value() << endl;
       continue;
     }
 
+    // We use the first three parts of the hostname to look up the
+    // build url.
     auto parts = split(hostname);
     if (parts.size() < 3) {
-      cout << "not enough args" << endl;
+      cout << "Not enough args" << endl;
       continue;
     }
     auto artifact = parts[0];
     auto buildid = parts[1];
     auto tenant = parts[2];
-    /*
-    cout << artifact << endl
-         << buildid << endl
-         << tenant << endl;
-    */
 
-     // 75031cad206c4014ad7a3387091d15ab
     try {
+      // Use the Zuul API to look up the artifact URL.
       auto uri = web::uri_builder("/api/tenant/" + tenant + "/build");
       uri.append_path(buildid);
       auto response = client.request(
         web::http::methods::GET, uri.to_string()).get();
       // body is a web::json::value
-      // cout << response.status_code() << endl;
       auto body = response.extract_json().get();
-      //cout << body.serialize() << endl;
 
-      // TODO: use artifact
+      // TODO: use artifact instead of log_url
       // body["log_url"].as_string() returns a const std::string&
       cout << body["log_url"].as_string() << endl;
 
       cache.put(hostname, body["log_url"].as_string());
     } catch (...) {
-      cout << "error" << endl;
+      // If anything goes wrong, we still need to return only a single
+      // string to apache, and recover for the next request, so we
+      // have a general exception handler here.
+      cout << "Error" << endl;
     }
   }
 }
