@@ -26,9 +26,9 @@ using namespace std;
 
 vector<string> split(const string &in)
 {
-  istringstream stream(in);
-  vector<string> parts;
-  string part;
+  istringstream stream{in};
+  vector<string> parts{};
+  string part{};
   while (getline(stream, part, '.')) {
     parts.push_back(part);
   }
@@ -56,11 +56,11 @@ public:
   // If the entry is present, it is moved to the head of the queue.
   optional<const string> get(const string &key)
   {
-    auto location = map.find(key);
+    auto location{map.find(key)};
     if (location == map.end())
       return {};
 
-    auto val = *(location->second);
+    auto val{*(location->second)};
     queue.erase(location->second);
     queue.push_front(val);
     //cout << "get push " << val.second << endl;
@@ -71,12 +71,12 @@ public:
   // recently used entry.
   void put(const string &key, const string &value)
   {
-    auto location = map.find(key);
+    auto location{map.find(key)};
     if (location != map.end())
       return;
 
     if (queue.size() == size) {
-      auto last = queue.back();
+      auto last{queue.back()};
       //cout << "put pop " << last.second << endl;
       queue.pop_back();
       map.erase(last.first);
@@ -91,7 +91,7 @@ public:
 
 int main(int, char**)
 {
-  web::http::client::http_client client("https://zuul.opendev.org");
+  web::http::client::http_client client{"https://zuul.opendev.org"};
 
   string hostname;
   Cache cache{2};
@@ -104,20 +104,20 @@ int main(int, char**)
     // site.688b70499b9a41a08f498ed6e932960c.openstack
     // site.dbefc23dcc594577a8bfa4db4f9b0a8f.openstack
 
-    auto val = cache.get(hostname);
+    auto val{cache.get(hostname)};
     if (val.has_value()) {
       cout << val.value() << endl;
       continue;
     }
 
-    auto parts = split(hostname);
+    auto parts{split(hostname)};
     if (parts.size() < 3) {
       cout << "not enough args" << endl;
       continue;
     }
-    auto artifact = parts[0];
-    auto buildid = parts[1];
-    auto tenant = parts[2];
+    auto artifact{parts[0]};
+    auto buildid{parts[1]};
+    auto tenant{parts[2]};
     /*
     cout << artifact << endl
          << buildid << endl
@@ -126,13 +126,13 @@ int main(int, char**)
 
      // 75031cad206c4014ad7a3387091d15ab
     try {
-      auto uri = web::uri_builder("/api/tenant/" + tenant + "/build");
+      web::uri_builder uri{"/api/tenant/" + tenant + "/build"};
       uri.append_path(buildid);
-      auto response = client.request(
-        web::http::methods::GET, uri.to_string()).get();
+      auto response{client.request(
+        web::http::methods::GET, uri.to_string()).get()};
       // body is a web::json::value
       // cout << response.status_code() << endl;
-      auto body = response.extract_json().get();
+      auto body{response.extract_json().get()};
       //cout << body.serialize() << endl;
 
       // TODO: use artifact
