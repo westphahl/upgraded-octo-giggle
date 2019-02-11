@@ -31,12 +31,12 @@
 
 using namespace std;
 
-vector<string> split(const string &in)
+vector<string> split(const string &in, char delim)
 {
   istringstream stream(in);
   vector<string> parts;
   string part;
-  while (getline(stream, part, '.')) {
+  while (getline(stream, part, delim)) {
     parts.push_back(part);
   }
   return parts;
@@ -96,9 +96,7 @@ public:
 
 int main(int, char**)
 {
-  web::http::client::http_client client("https://zuul.opendev.org");
-
-  string hostname;
+  string input;
   Cache cache{1024};
 
   // For each request apache receieves, it sends us the HTTP host name
@@ -107,8 +105,17 @@ int main(int, char**)
   // (protected by an internal mutex) and expect exactly one line of
   // output for each.
   // Expected input:
-  // site.926bb0aaddad4bc3853269451e115dcb.openstack.preview.opendev.org
-  while (getline(cin, hostname)) {
+  // https://zuul.opendev.org site.926bb0aaddad4bc3853269451e115dcb.openstack.preview.opendev.org
+  while (getline(cin, input)) {
+
+    // Split the input into api_url, hostname
+    auto parts = split(input, ' ');
+    if (parts.size() != 2) {
+      cout << "Wrong number of args" << endl;
+      continue;
+    }
+    auto api_url = parts[0];
+    auto hostname = parts[1];
 
     // If we have the value in the cache, return it.
     if (auto val = cache.get(hostname)) {
@@ -118,9 +125,9 @@ int main(int, char**)
 
     // We use the first three parts of the hostname to look up the
     // build url.
-    auto parts = split(hostname);
+    parts = split(hostname, '.');
     if (parts.size() < 3) {
-      cout << "Not enough args" << endl;
+      cout << "Not enough hostname parts" << endl;
       continue;
     }
     auto artifact = parts[0];
@@ -129,6 +136,7 @@ int main(int, char**)
 
     try {
       // Use the Zuul API to look up the artifact URL.
+      web::http::client::http_client client(api_url);
       auto uri = web::uri_builder("/api/tenant/" + tenant + "/build");
       uri.append_path(buildid);
       auto response = client.request(
