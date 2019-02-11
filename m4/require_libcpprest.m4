@@ -26,18 +26,24 @@
 # and distribute a modified version of the Autoconf Macro, you may extend
 # this special exception to the GPL to apply to your modified version as well.
  
-# Provides support for finding libcpprest.
-# LIBCPPREST_CFLAGS will be set, in addition to LIBCPPREST and LTLIBCPPREST
 
 AC_DEFUN([REQUIRE_LIBCPPREST],[
   # --------------------------------------------------------------------
   #  Check for libcpprest
   # --------------------------------------------------------------------
-  AC_SEARCH_LIBS([CONF_modules_unload], [crypto])
   AC_LANG_PUSH([C++])
-  AX_CXX_CHECK_LIB(boost_system, [boost::system::system_category()])
+  AX_CHECK_OPENSSL([],
+    AC_MSG_ERROR([openssl is required for ${PACKAGE}.]))
+
+  AX_BOOST_BASE(1.62)
+  AX_BOOST_SYSTEM
+
   AX_CXX_CHECK_LIB(cpprest, [utility::datetime::utc_now()])
   AC_LANG_POP()
   AS_IF([test "x${ac_cv_lib_cpprest_utility__datetime__utc_now__}" = "xno"],
     AC_MSG_ERROR([libcpprest is required for ${PACKAGE}.]))
+
+  LIBS="${LIBS} ${OPENSSL_LIBS} ${BOOST_SYSTEM_LIB}"
+  AM_CXXFLAGS="${AM_CXXFLAGS} ${OPENSSL_CFLAGS}"
+  AM_LDFLAGS="${AM_LDFLAGS} ${OPENSSL_LDFLAGS}"
 ])
