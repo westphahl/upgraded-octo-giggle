@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-FROM debian:testing as builder
+FROM debian:testing-slim as builder
 
 RUN mkdir -p /output/bindep
 RUN apt-get update && apt-get install -y python3-pip git && pip3 install bindep
@@ -27,7 +27,7 @@ RUN cd /src \
   && make \
   && make install
 
-FROM debian:testing
+FROM debian:testing-slim
 
 COPY --from=builder /output/bindep/run.txt /run.txt
 RUN apt-get update \
