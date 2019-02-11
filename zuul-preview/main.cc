@@ -93,11 +93,28 @@ public:
   }
 };
 
+class ClientCache {
+  unordered_map<string, web::http::client::http_client> clients;
+public:
+  ClientCache() : clients{} { }
+
+  web::http::client::http_client get(const string &key)
+  {
+    auto location = clients.find(key);
+    if (location == clients.end()) {
+      auto value = web::http::client::http_client(key);
+      clients.insert(make_pair(key, value));
+      return value;
+    }
+    return location->second;
+  }
+};
 
 int main(int, char**)
 {
   string input;
   Cache cache{1024};
+  ClientCache clients;
 
   // For each request apache receieves, it sends us the HTTP host name
   // on standard input.  We use that to look up the build URL and emit
@@ -136,8 +153,11 @@ int main(int, char**)
 
     try {
       // Use the Zuul API to look up the artifact URL.
-      web::http::client::http_client client(api_url);
-      auto uri = web::uri_builder("/api/tenant/" + tenant + "/build");
+
+      auto client = clients.get(api_url);
+      auto uri = web::uri_builder("api/tenant");
+      uri.append_path(tenant);
+      uri.append_path("build");
       uri.append_path(buildid);
       auto response = client.request(
         web::http::methods::GET, uri.to_string()).get();
