@@ -38,12 +38,13 @@ AC_DEFUN([REQUIRE_LIBCPPREST],[
   AX_BOOST_BASE(1.62)
   AX_BOOST_SYSTEM
 
-  AX_CXX_CHECK_LIB(cpprest, [utility::datetime::utc_now()])
+  AX_CHECK_LIBRARY([LIBCPPREST], [cpprest/http_client.h], [cpprest], [],
+                   [AC_MSG_ERROR([Unable to find libcpprest])])
   AC_LANG_POP()
   AS_IF([test "x${ac_cv_lib_cpprest_utility__datetime__utc_now__}" = "xno"],
     AC_MSG_ERROR([libcpprest is required for ${PACKAGE}.]))
 
-  LIBS="${LIBS} ${OPENSSL_LIBS} ${BOOST_SYSTEM_LIB}"
-  AM_CXXFLAGS="${AM_CXXFLAGS} ${OPENSSL_CFLAGS}"
-  AM_LDFLAGS="${AM_LDFLAGS} ${OPENSSL_LDFLAGS}"
+  LIBS="${LIBS} ${OPENSSL_LIBS} ${BOOST_SYSTEM_LIB} -lcpprest"
+  AM_CXXFLAGS="${AM_CXXFLAGS} ${OPENSSL_CFLAGS} ${LIBCPPREST_CFLAGS}"
+  AM_LDFLAGS="${AM_LDFLAGS} ${OPENSSL_LDFLAGS} "${LIBCPPREST_LDFLAGS}"
 ])
